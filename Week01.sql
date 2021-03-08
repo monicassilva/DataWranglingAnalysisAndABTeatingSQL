@@ -2,41 +2,77 @@
 /*Part - - Error Codes
 Exercise 1:
 Goal: Here we use users table to pull a list of user email addresses. Edit the query to pull email
-addresses, but only for non-deleted users.*/SELECT 
+addresses, but only for non-deleted users.*/
+
+SELECT 
   id AS user_id
  ,email_address 
  FROM dsv1069.users
- WHERE deleted_at IS NULL;--Exercise 2:
-----Goal: Use the items table to count the number of items for sale in each categorySELECT 
+ WHERE deleted_at IS NULL;
+
+
+
+--Exercise 2:
+----Goal: Use the items table to count the number of items for sale in each category
+
+SELECT 
   category
   ,COUNT(id) AS item_count
  FROM dsv1069.items
  GROUP BY category
  ORDER BY item_count DESC
- --Exercise 3:
-----Goal: Select all of the columns from the result when you JOIN the users table to the orders tableSELECT *
+ 
+
+
+--Exercise 3:
+----Goal: Select all of the columns from the result when you JOIN the users table to the orders table
+
+SELECT *
  FROM dsv1069.orders
  JOIN dsv1069.users
-ON orders.user_id = user_id--Exercise 4:
+ON orders.user_id = user_id
+
+
+--Exercise 4:
 ----Goal: Check out the query below. This is not the right way to count the number of viewed_item
---events. Determine what is wrong and correct the error.SELECT 
+--events. Determine what is wrong and correct the error.
+
+SELECT 
 COUNT(DISTINCT event_id) AS events
 FROM dsv1069.events
-WHERE event_name  = 'view_itens'--Exercise 5:
+WHERE event_name  = 'view_itens'
+
+
+
+--Exercise 5:
 ----Goal:Compute the number of items in the items table which have been ordered. The query
---below runs, but it isn’t right. Determine what is wrong and correct the error or start from scratch.SELECT 
+--below runs, but it isnâ€™t right. Determine what is wrong and correct the error or start from scratch.
+
+SELECT 
 COUNT(DISTINCT orders.item_id) AS item_count
 FROM dsv1069.orders
---Exercise 6:
+
+
+
+--Exercise 6:
 ----Goal: For each user figure out IF a user has ordered something, and when their first purchase
---was. The query below doesn’t return info for any of the users who haven’t ordered anything.SELECT 
+--was. The query below doesnâ€™t return info for any of the users who havenâ€™t ordered anything.
+
+SELECT 
 users.id AS users_id
 ,MIN(orders.paid_at) AS min_paid_at
 FROM dsv1069.users LEFT OUTER JOIN dsv1069.orders
 ON orders.user_id = users.id 
-GROUP BY users.id--Exercise 7:
+GROUP BY users.id
+
+
+
+
+--Exercise 7:
 ----Goal: Figure out what percent of users have ever viewed the user profile page, but this query
---isn’t right. Check to make sure the number of users adds up, and if not, fix the query.SELECT 
+--isnâ€™t right. Check to make sure the number of users adds up, and if not, fix the query.
+
+SELECT 
 (CASE WHEN first_view IS NULL THEN false
       ELSE true END) AS has_viewed_profile_page,
 COUNT(user_id) AS users
@@ -174,8 +210,12 @@ SELECT COUNT(*)
 FROM dsv1069.orders
 INNER JOIN dsv1069.users
 ON orders.user_id = COALESCE(users.parent_user_id,users_id);
-          --Part 4 - Counting Users  --Exercise 1: We’ll be using the users table to answer the question “How many new users are
---added each day?“. Start by making sure you understand the columns in the table.
+          
+
+--Part 4 - Counting Users  
+
+--Exercise 1: Weâ€™ll be using the users table to answer the question â€œHow many new users are
+--added each day?â€œ. Start by making sure you understand the columns in the table.
 
 SELECT 
   id
@@ -185,12 +225,16 @@ FROM dsv1069.users
 ORDER BY parent_user_id ASC 
 
 --Exercise 2: WIthout worrying about deleted user or merged users, count the number of users
---added each day.SELECT 
+--added each day.
+
+SELECT 
    date(created_at) AS day
    ,COUNT(*) AS users
 FROM dsv1069.users
     GROUP BY (created_at)
---Exercise 3: Consider the following query. Is this the right way to count merged or deleted
+
+
+--Exercise 3: Consider the following query. Is this the right way to count merged or deleted
 --users? If all of our users were deleted tomorrow what would the result look like?
 
 SELECT 
@@ -211,9 +255,11 @@ FROM dsv1069.users
 WHERE deleted_at IS NOT NULL
     GROUP BY (deleted_at)
 
---Exercise 5: Use the pieces you’ve built as subtables and create a table that has a column for
+--Exercise 5: Use the pieces youâ€™ve built as subtables and create a table that has a column for
 --the date, the number of users created, the number of users deleted and the number of users
---merged that day.SELECT 
+--merged that day.
+
+SELECT 
   new.day, 
   new.new_users_added,
   deleted.deleted_users,
@@ -263,8 +309,12 @@ My Work
 My Explorations
 Community
 Mode Public Warehouse
---Exercise 6: Refine your query from #5 to have informative column names and so that null
---columns return 0.SELECT 
+
+
+--Exercise 6: Refine your query from #5 to have informative column names and so that null
+--columns return 0.
+
+SELECT 
   new.day, 
   new.new_added_users, 
   COALESCE(deleted.deleted_users,0) AS deleted_users,
@@ -306,10 +356,14 @@ LEFT OUTER JOIN
     date(merged_at)
   ) merged
 ON 
-  merged.day = new.day--Exercise 7:
+  merged.day = new.day
+
+--Exercise 7:
 --What if there were days where no users were created, but some users were deleted or merged.
---Does the previous query still work? No, it doesn’t. Use the dates_rollup as a backbone for this
---query, so that we won’t miss any dates.SELECT 
+--Does the previous query still work? No, it doesnâ€™t. Use the dates_rollup as a backbone for this
+--query, so that we wonâ€™t miss any dates.
+
+SELECT 
   --new.day, 
   dates_rollup.date,
   new.new_added_users, 
@@ -360,3 +414,4 @@ LEFT OUTER JOIN
 ON 
 --  merged.day = new.day
  merged.day = date(dates_rollup.date)
+								     
